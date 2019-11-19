@@ -66,4 +66,3 @@ for (const message of data.messages) {
     apiGateway.post('/DSTU2/$process-message', message.fileContent)
         .then(r => console.log(`${message.fileName} - Success!`))
         .catch(e => console.error(`${message.fileName} - ${e.message}`));
-}
