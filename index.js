@@ -2,7 +2,7 @@
 
 const axios = require('axios');
 const path = require('path');
-const fs = require('fs-extra');
+const fs = require('fs');
 const program = require('commander');
 
 let input;
@@ -35,7 +35,9 @@ try {
 // Collect the message files and the config file
 const data = { config: null, messages: [] };
 for (const file of files) {
-    const fileContent = fs.readFileSync(path.join(input, file), 'utf8');
+    const filePath = path.join(input, file);
+    if (fs.statSync(filePath).isDirectory()) continue;
+    const fileContent = fs.readFileSync(filePath, 'utf8');
     if (fileContent) {
         if (file === 'config.json') {
             data.config = JSON.parse(fileContent);
@@ -60,8 +62,8 @@ const apiGateway = axios.create({
     timeout: data.config.timeout,
 });
 
-Promise.all(data.messages.map(message => {
+for (const message of data.messages) {
     apiGateway.post('/DSTU2/$process-message', message)
-    .then(r => console.log('Success'))
-    .catch(e => console.error(e.message));
-}));
+        .then(r => console.log('Success'))
+        .catch(e => console.error(e.message));
+}
