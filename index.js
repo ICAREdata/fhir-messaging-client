@@ -45,13 +45,23 @@ for (const file of files) {
     }
 }
 
+if (!data.config) {
+    console.error('No config.json in messages folder.');
+    program.help();
+}
+
+if (data.messages.length === 0) {
+    console.error('No messages found in messages folder.');
+    program.help();
+}
+
 const apiGateway = axios.create({
     baseURL: data.config.baseURL,
     timeout: data.config.timeout,
 });
 
-for (const message of data.messages) {
+Promise.all(data.messages.map(message => {
     apiGateway.post('/DSTU2/$process-message', message)
-        .then(r => console.log('Success'))
-        .catch(e => console.error(e.message));
-}
+    .then(r => console.log('Success'))
+    .catch(e => console.error(e.message));
+}));
