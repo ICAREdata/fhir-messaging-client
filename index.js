@@ -42,7 +42,7 @@ for (const file of files) {
         if (file === 'config.json') {
             data.config = JSON.parse(fileContent);
         } else if (file.endsWith('.json')) {
-            data.messages.push(fileContent);
+            data.messages.push({fileName: file, fileContent});
         }
     }
 }
@@ -63,7 +63,7 @@ const apiGateway = axios.create({
 });
 
 for (const message of data.messages) {
-    apiGateway.post('/DSTU2/$process-message', message)
-        .then(r => console.log('Success'))
-        .catch(e => console.error(e.message));
+    apiGateway.post('/DSTU2/$process-message', message.fileContent)
+        .then(r => console.log(`${message.fileName} - Success!`))
+        .catch(e => console.error(`${message.fileName} - ${e.message}`));
 }
