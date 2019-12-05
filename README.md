@@ -37,3 +37,6 @@ node . <path-to-messages-folder>
 ```
 
 This will report success for each successful post, and will report the error message for any unsuccessful post.
+
+Create a jwk.
+Register a jwk.
