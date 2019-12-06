@@ -37,7 +37,8 @@ if (!identityFilePath) {
 }
 
 // Check that a client id exists
-if (!program.clientId) {
+const clientId = program.clientId || process.env.ICD_CLIENT_ID;
+if (!clientId) {
   console.log('Missing client ID');
   program.help();
 }
@@ -118,8 +119,8 @@ const options = {
 const assertionPromise = tokenEndpointPromise
     .then((tokenEndpoint) => {
       const content = JSON.stringify({
-        iss: program.clientId,
-        sub: program.clientId,
+        iss: clientId,
+        sub: clientId,
         aud: tokenEndpoint,
         exp: Math.floor(Date.now()/1000) + 300,
         jti: uuidv4(),

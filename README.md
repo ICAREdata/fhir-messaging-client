@@ -28,15 +28,16 @@ If following the local setup instructions for the [ICAREdata platform](https://g
 
 The directory can then contain as many JSON files containing valid FHIR Messages as desired. It must contain at least one.
 
+You will also need to create a jwk and register the public jwk with the OAuth server. 
+
 ## Execution
 
 To post messages, enter the directory for this project, and then run
 
 ```bash
-node . <path-to-messages-folder>
+node . <path-to-messages-folder> -c <client-id> -i <path-to-private-jwk>
 ```
 
 This will report success for each successful post, and will report the error message for any unsuccessful post.
 
-Create a jwk.
-Register a jwk.
+Alternatively, you can set the `ICD_PRIVATE_JWK` and `ICD_CLIENT_ID` environment variables.
