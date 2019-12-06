@@ -7,6 +7,7 @@ const fs = require('fs');
 const program = require('commander');
 const uuidv4 = require('uuid/v4');
 const {JWS} = require('node-jose');
+const querystring = require('querystring');
 
 let input;
 
@@ -112,7 +113,7 @@ const options = {
   compact: true,
   alg: 'RS256',
   fields: {
-    kid: uuidv4(),
+    kid: identityFile.kid,
     typ: 'JWT',
   },
 };
@@ -129,13 +130,16 @@ const assertionPromise = tokenEndpointPromise
     });
 
 const tokenPromise = Promise.all([assertionPromise, oauthPromise])
-    .then((assertion, oauth) => oauth.post('', {
-      client_assertion: assertion,
-      client_assertion_type:
-        'urn:ietf:params:oauth:client-assertion-type:jwt-bearer',
-      grant_type: 'client_credentials',
-      scope: 'system/$process-message',
-    }))
+    .then(([assertion, oauth]) => {
+      const body = querystring.stringify({
+        client_assertion: assertion,
+        client_assertion_type:
+          'urn:ietf:params:oauth:client-assertion-type:jwt-bearer',
+        grant_type: 'client_credentials',
+        scope: 'system/$process-message',
+      });
+      return oauth.post('', body);
+    })
     .then((r) => r.data.access_token);
 
 const processMessage = (message, axiosInstance) => {
