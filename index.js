@@ -94,20 +94,18 @@ const apiGateway = axios.create({
 const tokenEndpointPromise = apiGateway.get('/.well-known/smart-configuration')
     .then((r) => r.data.token_endpoint);
 
-// TODO: remove these once OAuth is behind api gateway
 const httpsAgent = new https.Agent({
   rejectUnauthorized: false, // Turn off ssl verification
 });
 const oauthPromise = tokenEndpointPromise
     .then((tokenEndpoint) => axios.create({
       httpsAgent,
-      baseURL: tokenEndpoint, // This part will need to change a bit
+      baseURL: tokenEndpoint,
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/x-www-form-urlencoded',
       },
     }));
-// Remove to here
 
 const options = {
   compact: true,
