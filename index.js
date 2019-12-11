@@ -90,10 +90,12 @@ const apiGateway = axios.create({
   timeout: data.config.timeout,
 });
 
-// TODO: Will need to remove the base URL from this
-// ({baseURL}/{tokenEndpoint} vs /{tokenEndpoint})
 const tokenEndpointPromise = apiGateway.get('/.well-known/smart-configuration')
-    .then((r) => r.data.token_endpoint);
+    .then((r) => r.data.token_endpoint)
+    .catch((e) => {
+      console.error(`Request for token endpoint failed: ${e.message}`);
+      program.help();
+    });
 
 const httpsAgent = new https.Agent({
   rejectUnauthorized: false, // Turn off ssl verification
@@ -126,6 +128,10 @@ const assertionPromise = tokenEndpointPromise
         jti: uuidv4(),
       });
       return JWS.createSign(options, identityFile).update(content).final();
+    })
+    .catch((e) => {
+      console.error(`Failed to create assertion: ${e.message}`);
+      program.help();
     });
 
 const tokenPromise = Promise.all([assertionPromise, oauthPromise])
@@ -139,7 +145,11 @@ const tokenPromise = Promise.all([assertionPromise, oauthPromise])
       });
       return oauth.post('', body);
     })
-    .then((r) => r.data.access_token);
+    .then((r) => r.data.access_token)
+    .catch((e) => {
+      console.error(`Failed to obtain access token: ${e.message}`);
+      program.help();
+    });
 
 const processMessage = (message, axiosInstance) => {
   axiosInstance.post('/DSTU2/$process-message', message.fileContent)
