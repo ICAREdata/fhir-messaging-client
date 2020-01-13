@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 const program = require('commander');
-const {Client} = require('./src/Client');
+const Client = require('./src/Client.js');
 
 let input;
 program

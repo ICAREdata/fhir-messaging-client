@@ -10,7 +10,7 @@ const querystring = require('querystring');
  * A Client to be used to post Messages to a FHIR server after negotiating
  * authentication with an OAuth server.
  */
-export class Client {
+module.exports = class Client {
   /**
    * Create the Client.
    * @param {string} input The input path containing FHIR messages.
@@ -82,8 +82,8 @@ export class Client {
     }
 
     this.apiGateway = axios.create({
-      baseURL: data.config.baseURL,
-      timeout: data.config.timeout,
+      baseURL: this.data.config.baseURL,
+      timeout: this.data.config.timeout,
     });
   }
 
@@ -175,4 +175,4 @@ export class Client {
         .then((r) => console.log(`${message.fileName} - Success!`))
         .catch((e) => console.error(`${message.fileName} - ${e.message}`));
   };
-}
+};
