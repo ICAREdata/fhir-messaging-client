@@ -1,8 +1,9 @@
-
 const https = require('https');
 const axios = require('axios');
 const uuidv4 = require('uuid/v4');
-const {JWS} = require('node-jose');
+const {
+  JWS
+} = require('node-jose');
 
 /**
  * A Client to be used to post Messages to a FHIR server after negotiating
@@ -25,6 +26,7 @@ module.exports = class Client {
       baseURL: this.config.baseURL,
       timeout: this.config.timeout
     });
+
   }
 
   setBearerToken(token) {
@@ -35,12 +37,12 @@ module.exports = class Client {
 
   getTokenUrl() {
     return this.apiGateway.get(
-        '/.well-known/smart-configuration',
-      ).then((r) => r.data.token_endpoint)
+      '/.well-known/smart-configuration',
+    ).then((r) => r.data.token_endpoint)
   }
 
 
-  generateClientAssetion(tokenEndpoint) {
+  generateClientAssetion(tokenEndpoint, jti) {
 
     const options = {
       compact: true,
@@ -56,12 +58,12 @@ module.exports = class Client {
       sub: this.clientId,
       aud: tokenEndpoint,
       exp: Math.floor(Date.now() / 1000) + 300,
-      jti: uuidv4()
+      jti: jti || uuidv4()
     });
 
     const assertion = JWS.createSign(
       options,
-      this.identityFile,
+      this.jwk,
     ).update(content).final();
 
     return {
@@ -100,7 +102,7 @@ module.exports = class Client {
    * @param {object} message The FHIR Message to send
    */
   processMessage(message) {
-    return this.apiGateway.post('/DSTU2/$process-message', message)
+    return this.apiGateway.post('/R4/$process-message', message)
   };
 
 }

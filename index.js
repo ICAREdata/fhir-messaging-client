@@ -44,7 +44,8 @@ try {
         }
       }
     }
-  });
+  }).catch((e) => console.log(e));
+  ;
 } catch (e) {
   console.error(e);
   program.help();
