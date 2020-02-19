@@ -2,7 +2,7 @@ const https = require('https');
 const axios = require('axios');
 const uuidv4 = require('uuid/v4');
 const {
-  JWS
+  JWS,
 } = require('node-jose');
 
 /**
@@ -10,13 +10,6 @@ const {
  * authentication with an OAuth server.
  */
 module.exports = class Client {
-
-  /**
-   * Create the Client.
-   * @param {string} JWK The input path containing FHIR messages.
-   * @param {string} url The path to the private JWK.
-   * @param {string} clientId The client id to use for authentication.
-   */
   constructor(config) {
     this.config = config;
     this.jwk = this.config.jwk;
@@ -24,9 +17,8 @@ module.exports = class Client {
 
     this.apiGateway = axios.create({
       baseURL: this.config.baseURL,
-      timeout: this.config.timeout
+      timeout: this.config.timeout,
     });
-
   }
 
   setBearerToken(token) {
@@ -34,26 +26,23 @@ module.exports = class Client {
       `Bearer ${token}`;
 
     console.log(this.apiGateway.defaults.headers.common['Authorization']);
-    
   }
-
 
   getTokenUrl() {
     return this.apiGateway.get(
-      '/.well-known/smart-configuration',
-    ).then((r) => r.data.token_endpoint)
+        '/.well-known/smart-configuration',
+    ).then((r) => r.data.token_endpoint);
   }
 
 
-  generateClientAssetion(tokenEndpoint, jti) {
-
+  generateClientAssertion(tokenEndpoint, jti) {
     const options = {
       compact: true,
       alg: 'RS384',
       fields: {
         kid: this.jwk.kid,
         typ: 'JWT',
-      }
+      },
     };
 
     const content = JSON.stringify({
@@ -61,53 +50,47 @@ module.exports = class Client {
       sub: this.clientId,
       aud: tokenEndpoint,
       exp: Math.floor(Date.now() / 1000) + 300,
-      jti: jti || uuidv4()
+      jti: jti || uuidv4(),
     });
 
     const assertion = JWS.createSign(
-      options,
-      this.jwk,
+        options,
+        this.jwk,
     ).update(content).final();
 
     return {
       client_assertion: assertion,
       client_assertion_type: 'urn:ietf:params:oauth:client-assertion-type:jwt-bearer',
       grant_type: 'client_credentials',
-      scope: 'system/$process-message'
+      scope: 'system/$process-message',
     };
-
   }
 
   async authorize() {
     await this.getTokenUrl().then((tokenEndpoint) => {
-      let rejectUnauthorized = false
+      let rejectUnauthorized = false;
       if (this.config.ssl_strict == false) {
         rejectUnauthorized = true;
       }
       const httpsAgent = new https.Agent({
-        rejectUnauthorized: rejectUnauthorized // Turn off ssl verification
+        rejectUnauthorized, // Turn off ssl verification
       });
-      const assertion = this.generateClientAssetion(tokenEndpoint);
+      const assertion = this.generateClientAssertion(tokenEndpoint);
       return axios.create({
         httpsAgent,
         baseURL: tokenEndpoint,
         headers: {
           'Accept': 'application/json',
-          'Content-Type': 'application/x-www-form-urlencoded'
-        }
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
       }).post('', assertion).then((response) => {
-        this.setBearerToken(response.data.access_token)}
-        );
-    })
+        this.setBearerToken(response.data.access_token);
+      });
+    });
   }
 
-  /**
-   * Send a FHIR Message to FHIR server.
-   * @param {object} message The FHIR Message to send
-   */
   processMessage(message) {
     // TODO: hook some local validation in here
-    return this.apiGateway.post('/R4/$process-message', message)
+    return this.apiGateway.post('/R4/$process-message', message);
   };
-
-}
+};
