@@ -32,6 +32,9 @@ module.exports = class Client {
   setBearerToken(token) {
     this.apiGateway.defaults.headers.common['Authorization'] =
       `Bearer ${token}`;
+
+    console.log(this.apiGateway.defaults.headers.common['Authorization']);
+    
   }
 
 
@@ -75,8 +78,8 @@ module.exports = class Client {
 
   }
 
-  authorize() {
-    return this.getTokenUrl().then((tokenEndpoint) => {
+  async authorize() {
+    await this.getTokenUrl().then((tokenEndpoint) => {
       let rejectUnauthorized = false
       if (this.config.ssl_strict == false) {
         rejectUnauthorized = true;
@@ -85,15 +88,16 @@ module.exports = class Client {
         rejectUnauthorized: rejectUnauthorized // Turn off ssl verification
       });
       const assertion = this.generateClientAssetion(tokenEndpoint);
-      axios.create({
+      return axios.create({
         httpsAgent,
         baseURL: tokenEndpoint,
         headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/x-www-form-urlencoded'
         }
-      }).post('', assertion).then((response) => this.setBearerToken(response.data.access_token));
-
+      }).post('', assertion).then((response) => {
+        this.setBearerToken(response.data.access_token)}
+        );
     })
   }
 
@@ -102,6 +106,7 @@ module.exports = class Client {
    * @param {object} message The FHIR Message to send
    */
   processMessage(message) {
+    // TODO: hook some local validation in here
     return this.apiGateway.post('/R4/$process-message', message)
   };
 
