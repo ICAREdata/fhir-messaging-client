@@ -15,7 +15,7 @@ describe('Client', () => {
     const scope = nock('http://localhost')
         .get('/.well-known/smart-configuration')
         .reply(200, wellKnown);
-    scope.post('/token').reply(200, "{\"access_token\": \"FAKE_BEARER_TOKEN\"}");
+    scope.post('/token').reply(200, '{\"access_token\": \"FAKE_BEARER_TOKEN\"}');
     scope.post('/$process-message').reply(200, fakeResponse);
   });
 

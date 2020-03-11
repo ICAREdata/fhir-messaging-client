@@ -82,7 +82,9 @@ module.exports = class Client {
             'Content-Type': 'application/x-www-form-urlencoded',
           },
         }).post('', querystring.stringify(assertion)).then((response) => {
-          const json = ((typeof response.data) == 'string') ? JSON.parse(response.data): response.data;
+          const json = ((typeof response.data) === 'string') ?
+            JSON.parse(response.data) :
+            response.data;
           this.setBearerToken(json.access_token);
         }).catch((e) => {
           console.error(e);
