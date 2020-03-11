@@ -15,8 +15,8 @@ describe('Client', () => {
     const scope = nock('http://localhost')
         .get('/.well-known/smart-configuration')
         .reply(200, wellKnown);
-    scope.post('/token').reply(200, {'access_token': 'FAKE_BEARER_TOKEN'});
-    scope.post('/R4/$process-message').reply(200, fakeResponse);
+    scope.post('/token').reply(200, "{\"access_token\": \"FAKE_BEARER_TOKEN\"}");
+    scope.post('/$process-message').reply(200, fakeResponse);
   });
 
 
@@ -36,16 +36,17 @@ describe('Client', () => {
     };
 
     const client = new Client(config);
-    const assertion = client.generateClientAssertion(wellKnown.token_endpoint, 1);
-    expect(assertion);
-    expect(assertion.client_assertion_type);
-    expect(assertion.client_assertion_type).toEqual(
-        expectedAssertion.client_assertion_type,
-    );
-    expect(assertion.grant_type).toEqual(expectedAssertion.grant_type);
-    expect(assertion.scope).toEqual(expectedAssertion.scope);
+    client.generateClientAssertion(wellKnown.token_endpoint, 1).then((assertion) => {
+      expect(assertion);
+      expect(assertion.client_assertion_type);
+      expect(assertion.client_assertion_type).toEqual(
+          expectedAssertion.client_assertion_type,
+      );
+      expect(assertion.grant_type).toEqual(expectedAssertion.grant_type);
+      expect(assertion.scope).toEqual(expectedAssertion.scope);
 
-    done();
+      done();
+    });
   });
 
   it('Can make authorization request for token with signed assertion', (done) => {

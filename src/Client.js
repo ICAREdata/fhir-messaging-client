@@ -24,7 +24,6 @@ module.exports = class Client {
   setBearerToken(token) {
     this.apiGateway.defaults.headers.common['Authorization'] =
       `Bearer ${token}`;
-    console.log(this.apiGateway.defaults.headers.common['Authorization']);
   }
 
   getTokenUrl() {
@@ -33,7 +32,7 @@ module.exports = class Client {
     ).then((r) => r.data.token_endpoint);
   }
 
-  async generateClientAssetion(tokenEndpoint, jti) {
+  async generateClientAssertion(tokenEndpoint, jti) {
     const options = {
       compact: true,
       alg: 'RS384',
@@ -74,7 +73,7 @@ module.exports = class Client {
         rejectUnauthorized: rejectUnauthorized, // Turn off ssl verification
       });
 
-      this.generateClientAssetion(tokenEndpoint).then((assertion) => {
+      return this.generateClientAssertion(tokenEndpoint).then((assertion) => {
         return axios.create({
           httpsAgent,
           baseURL: tokenEndpoint,
@@ -83,7 +82,7 @@ module.exports = class Client {
             'Content-Type': 'application/x-www-form-urlencoded',
           },
         }).post('', querystring.stringify(assertion)).then((response) => {
-          const json = JSON.parse(response.data);
+          const json = ((typeof response.data) == 'string') ? JSON.parse(response.data): response.data;
           this.setBearerToken(json.access_token);
         }).catch((e) => {
           console.error(e);
