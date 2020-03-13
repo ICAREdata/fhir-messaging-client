@@ -29,11 +29,12 @@ describe('Client', () => {
   });
 
   it('Can generate jwk from pkcs12 file', (done) => {
-    const client = new Client({pkcs12: './src/__test__/keystore.p12', pkcs12Pass: 'test'});
+    const client = new Client({pkcs12: './src/__test__/keystore.p12',
+      pkcs12Pass: 'test'});
     client.getJWK().then((jwk) => {
       expect(jwk).toEqual(pkcs12JWK);
       done();
-    })
+    });
   });
 
   it('Can generate a signedRequest', (done) => {

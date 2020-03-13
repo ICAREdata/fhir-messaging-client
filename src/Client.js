@@ -26,13 +26,14 @@ module.exports = class Client {
       `Bearer ${token}`;
   }
 
-  async getJWK(){
-    if(this.config.jwk){return this.config.jwk}
-    else if(this.config.pkcs12){ 
-      let jwk = await utils.pkcs12ToJwk(this.config.pkcs12, this.config.pkcs12Pass)
+  async getJWK() {
+    if (this.config.jwk) {
+      return this.config.jwk;
+    } else if (this.config.pkcs12) {
+      const jwk = await utils.pkcs12ToJwk(this.config.pkcs12, this.config.pkcs12Pass);
       this.config.jwk = jwk;
     }
-      return this.config.jwk;
+    return this.config.jwk;
   }
 
   getTokenUrl() {
@@ -42,7 +43,7 @@ module.exports = class Client {
   }
 
   async generateClientAssertion(tokenEndpoint, jti) {
-    let jwk = await this.getJWK();
+    const jwk = await this.getJWK();
     const options = {
       compact: true,
       alg: 'RS384',
@@ -59,7 +60,7 @@ module.exports = class Client {
       exp: Math.floor(Date.now() / 1000) + 300,
       jti: jti || uuidv4(),
     });
-    
+
     const assertion = await JWS.createSign(
         options,
         jwk,
