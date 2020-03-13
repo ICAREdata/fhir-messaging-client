@@ -1,7 +1,7 @@
 const Client = require('../client');
 const config = require('./config.json');
 const nock = require('nock');
-
+const pkcs12JWK = require('./pkcs12JWK.json');
 const wellKnown = {
   'token_endpoint': 'http://localhost/token',
   'token_endpoint_auth_methods_supported': ['private_key_jwt'],
@@ -26,6 +26,14 @@ describe('Client', () => {
       expect(te == wellKnown.token_endpoint);
       done(te != wellKnown.token_endpoint);
     });
+  });
+
+  it('Can generate jwk from pkcs12 file', (done) => {
+    const client = new Client({pkcs12: './src/__test__/keystore.p12', pkcs12Pass: 'test'});
+    client.getJWK().then((jwk) => {
+      expect(jwk).toEqual(pkcs12JWK);
+      done();
+    })
   });
 
   it('Can generate a signedRequest', (done) => {
