@@ -2,6 +2,7 @@ const https = require('https');
 const axios = require('axios');
 const uuidv4 = require('uuid/v4');
 const querystring = require('querystring');
+const utils = require('./utils');
 const {
   JWS,
 } = require('node-jose');
@@ -13,7 +14,6 @@ const {
 module.exports = class Client {
   constructor(config) {
     this.config = config;
-    this.jwk = this.config.jwk;
     this.clientId = this.config.clientId;
     this.apiGateway = axios.create({
       baseURL: this.config.baseURL,
@@ -26,6 +26,16 @@ module.exports = class Client {
       `Bearer ${token}`;
   }
 
+  async getJWK() {
+    if (this.config.jwk) {
+      return this.config.jwk;
+    } else if (this.config.pkcs12) {
+      const jwk = await utils.pkcs12ToJwk(this.config.pkcs12, this.config.pkcs12Pass);
+      this.config.jwk = jwk;
+    }
+    return this.config.jwk;
+  }
+
   getTokenUrl() {
     return this.apiGateway.get(
         '/.well-known/smart-configuration',
@@ -33,11 +43,12 @@ module.exports = class Client {
   }
 
   async generateClientAssertion(tokenEndpoint, jti) {
+    const jwk = await this.getJWK();
     const options = {
       compact: true,
       alg: 'RS384',
       fields: {
-        kid: this.jwk.kid,
+        kid: jwk.kid,
         typ: 'JWT',
       },
     };
@@ -52,7 +63,7 @@ module.exports = class Client {
 
     const assertion = await JWS.createSign(
         options,
-        this.jwk,
+        jwk,
     ).update(content).final();
 
     return {
