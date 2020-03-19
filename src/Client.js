@@ -17,8 +17,22 @@ module.exports = class Client {
     this.clientId = this.config.clientId;
     this.apiGateway = axios.create({
       baseURL: this.config.baseURL,
-      timeout: this.config.timeout,
     });
+  }
+
+  async canSendMessage() {
+    const smartConfiguration =
+      await this.apiGateway.get('/.well-known/smart-configuration')
+          .then((r) => r)
+          .catch((e) => console.log(e));
+
+    if (smartConfiguration && smartConfiguration.data) {
+      const scopes = smartConfiguration.data.scopes_supported;
+      if (Array.isArray(scopes)) {
+        return scopes.includes('system/$process-message');
+      }
+    }
+    return false;
   }
 
   setBearerToken(token) {
