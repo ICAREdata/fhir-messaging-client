@@ -10,6 +10,7 @@ const wellKnown = {
 };
 
 const fakeResponse = {'resourceType': 'Bundle'};
+
 describe('Client', () => {
   beforeEach(() => {
     const scope = nock('http://localhost')
@@ -19,6 +20,13 @@ describe('Client', () => {
     scope.post('/$process-message').reply(200, fakeResponse);
   });
 
+  it('Can verify scopes for message processing', (done) => {
+    const client = new Client(config);
+    client.canSendMessage().then((r) => {
+      expect(r).toEqual(true);
+      done();
+    });
+  });
 
   it('Can retrieve well known endpoint to configure itself', (done) => {
     const client = new Client(config);

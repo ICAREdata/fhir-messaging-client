@@ -29,21 +29,29 @@ program
 try {
   const config = readConfigFile(program.config);
   const client = new Client(config);
-  client.authorize().then(() => {
-    const files = fs.readdirSync(input, 'utf8');
-    for (const file of files) {
-      const filePath = path.join(input, file);
-      if (fs.statSync(filePath).isDirectory()) continue;
-      const fileContent = fs.readFileSync(filePath, 'utf8');
-      if (fileContent) {
-        if (file.endsWith('.json')) {
-          client.processMessage(fileContent)
-              .then((r) => console.log(`${file} - Success!`))
-              .catch((e) => console.error(`${file} - ${e.message}`));
+  client.canSendMessage()
+      .then((r) => {
+        if (!r) {
+          console.log(`The server does not provide the 'system/$process-message' scope.`);
+          return;
         }
-      }
-    }
-  }).catch((e) => console.log(e));
+        client.authorize().then(() => {
+          const files = fs.readdirSync(input, 'utf8');
+          for (const file of files) {
+            const filePath = path.join(input, file);
+            if (fs.statSync(filePath).isDirectory()) continue;
+            const fileContent = fs.readFileSync(filePath, 'utf8');
+            if (fileContent) {
+              if (file.endsWith('.json')) {
+                client.processMessage(fileContent)
+                    .then(() => console.log(`${file} - Success!`))
+                    .catch((e) => console.error(`${file} - ${e.message}`));
+              }
+            }
+          }
+        }).catch((e) => console.log(e));
+      })
+      .catch((e) => console.log(e));
 } catch (e) {
   console.error(e);
   program.help();
