@@ -23,7 +23,6 @@ describe('Client', () => {
   it('Can verify scopes for message processing', (done) => {
     const client = new Client(config);
     client.canSendMessage().then((r) => {
-      console.log(r);
       expect(r).toEqual(true);
       done();
     });

@@ -32,7 +32,8 @@ module.exports = class Client {
         return scopes.includes('system/$process-message');
       }
     }
-    return false;
+
+    throw new Error(`The server does not provide a well-known SMART configuration.`);
   }
 
   setBearerToken(token) {
