@@ -34,6 +34,14 @@ In addition, you must have a JSON configuration file on your local file system, 
 
 *NOTE* More detailed instructions will follow for how to register a client with the ICAREdata infrastructure in the future.
 
+## Run the Test Suite
+
+To run the test suite for this repository, run the following command.
+
+```bash
+yarn test
+```
+
 ## Execution
 
 To post messages, enter the directory for this project, and then run
