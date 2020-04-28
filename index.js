@@ -45,7 +45,11 @@ try {
               if (file.endsWith('.json')) {
                 client.processMessage(fileContent)
                     .then(() => console.log(`${file} - Success!`))
-                    .catch((e) => console.error(`${file} - ${e.message}`));
+                    .catch((e) => {
+                      const violation = JSON.parse(e.response.data.errorMessage);
+                      const violationText = violation.issue[0].details.text;
+                      console.error(`${file} - ${e.message} - ${violationText}`);
+                    });
               }
             }
           }
