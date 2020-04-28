@@ -1,6 +1,6 @@
 const https = require('https');
 const axios = require('axios');
-const uuidv4 = require('uuid/v4');
+const {v4} = require('uuid');
 const querystring = require('querystring');
 const utils = require('./utils');
 const {
@@ -73,7 +73,7 @@ module.exports = class Client {
       sub: this.clientId,
       aud: this.config.aud || tokenEndpoint,
       exp: Math.floor(Date.now() / 1000) + 300,
-      jti: jti || uuidv4(),
+      jti: jti || v4(),
     });
 
     const assertion = await JWS.createSign(

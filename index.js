@@ -11,7 +11,7 @@ function readConfigFile(configFile) {
 
 let input;
 program
-    .name('icaredata-client')
+    .name('fhir-messaging-client')
     .usage('<path-to-messages> [options]')
     .option(
         '-c, --config <configFilePath>',

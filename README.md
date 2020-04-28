@@ -1,6 +1,6 @@
 # Local Dev Setup
 
-The `icaredata-client` repository contains a client through which a user can process FHIR Message Bundles by sending them to the ICAREdata infrastructure.
+The `fhir-messaging-client` repository contains a client through which a user can process FHIR Message Bundles by sending them to the ICAREdata infrastructure.
 
 ## Install Dependencies  
 
