@@ -47,7 +47,7 @@ yarn test
 To post messages, enter the directory for this project, and then run
 
 ```bash
-node . <path-to-messages-folder> -c <config-file-path>
+node index.js <path-to-messages-folder> -c <config-file-path>
 ```
 
 This will report success for each successful post, and will report the error message for any unsuccessful post.
