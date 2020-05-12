@@ -47,7 +47,7 @@ try {
                     .then(() => console.log(`${file} - Success!`))
                     .catch((e) => {
                       const violation = JSON.parse(e.response.data.errorMessage);
-                      const violationText = violation.issue[0].details.text;
+                      const violationText = violation.entry[1].resource.issue.details.text;
                       console.error(`${file} - ${e.message} - ${violationText}`);
                     });
               }
