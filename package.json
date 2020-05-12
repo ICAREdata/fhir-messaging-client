@@ -1,6 +1,6 @@
 {
   "name": "fhir-messaging-client",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A command-line interface that posts FHIR Messages from a file system to the ICAREdata API",
   "main": "src/Client.js",
   "repository": {
