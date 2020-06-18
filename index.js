@@ -32,7 +32,7 @@ try {
   client.canSendMessage()
       .then((r) => {
         if (!r) {
-          console.log(`The server does not provide the 'system/$process-message' scope.`);
+          console.error(`The server does not provide the 'system/$process-message' scope.`);
           return;
         }
         client.authorize().then(() => {
@@ -53,10 +53,10 @@ try {
               }
             }
           }
-        }).catch((e) => console.log(e));
+        }).catch((e) => console.error(e.message));
       })
-      .catch((e) => console.log(e));
+      .catch((e) => console.error(e.message));
 } catch (e) {
-  console.error(e);
+  console.error(e.message);
   program.help();
 };
