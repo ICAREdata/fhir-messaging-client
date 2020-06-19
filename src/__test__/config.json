@@ -1,6 +1,7 @@
 {
   "baseURL" : "http://localhost",
-  "client_id": "someid",
+  "clientId": "someid",
+  "aud": "someaud",
   "jwk": {
     "kty": "RSA",
     "kid": "57540f2e-d3f7-4cbc-b292-b04b510de634",

@@ -21,10 +21,31 @@ module.exports = class Client {
   }
 
   async canSendMessage() {
+    if (!this.config) {
+      throw new Error(`FHIRMessagingClient config provided for client.`);
+    }
+
+    if (!this.config.baseURL) {
+      throw new Error(`FHIRMessagingClient config does not contain a 'baseURL' field.`);
+    }
+
+    if (!this.config.clientId) {
+      throw new Error(`FHIRMessagingClient config does not contain a 'clientId' field.`);
+    }
+
+    if (!this.config.aud) {
+      throw new Error(`FHIRMessagingClient config does not contain an 'aud' field.`);
+    }
+
+    if (!(this.config.jwk || (this.config.pkcs12 && this.config.pkcs12Pass))) {
+      throw new Error(
+          `FHIRMessagingClient config does not contain a 'jwk' field or a 'pkcs12' and 'pkcs12Pass' field.`,
+      );
+    }
+
     const smartConfiguration =
       await this.apiGateway.get('/.well-known/smart-configuration')
-          .then((r) => r)
-          .catch((e) => console.log(e));
+          .then((r) => r);
 
     if (smartConfiguration && smartConfiguration.data) {
       const scopes = smartConfiguration.data.scopes_supported;
@@ -112,8 +133,6 @@ module.exports = class Client {
             JSON.parse(response.data) :
             response.data;
           this.setBearerToken(json.access_token);
-        }).catch((e) => {
-          console.error(e);
         });
       });
     });

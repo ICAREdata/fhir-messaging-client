@@ -1,0 +1,7 @@
+{
+  "baseURL" : "http://localhost",
+  "clientId": "someid",
+  "aud": "someaud",
+  "pkcs12": "./src/__test__/keystore.p12",
+  "pkcs12Pass": "test"
+}
