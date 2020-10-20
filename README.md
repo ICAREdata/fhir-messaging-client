@@ -10,7 +10,7 @@ In order to post FHIR Messages to the ICAREdata infrastructure, you have to set 
 
 In addition, you must have a JSON configuration file on your local file system, ideally not in your input message directory. This configuration file will contain information associated with your client registration with the ICAREdata infrastructure's OAuth2 authentication framework.
 
-* A `baseURL` field that indicates the base URL of the server to post messages to,
+* A `baseURL` field that indicates the base URL of the server to post messages to.
 * A `clientId` field containing the client ID that is registered for the ICAREdata OAuth2 framework.
 * An `aud` field containing the audience parameter that is registered for the client in the ICAREdata OAuth2 framework.
 * And private-key information corresponding to the registered client in the ICAREdata OAuth2 framework, which can be provided in two formats:
