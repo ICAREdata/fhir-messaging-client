@@ -132,6 +132,7 @@ module.exports = class Client {
           const json = ((typeof response.data) === 'string') ?
             JSON.parse(response.data) :
             response.data;
+          if (!json.access_token) throw new Error('The server could not provide an access token');
           this.setBearerToken(json.access_token);
         });
       });
