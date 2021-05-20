@@ -11,11 +11,12 @@
     "test": "yarn jest"
   },
   "contributors": [
-    "Dylan Mahalingam <kmahalingam@mitre.org>",
     "Julia Afeltra <jafeltra@mitre.org>",
     "Julian Carter <jacarter@mitre.org>",
     "Matthew Gramigna <mgramigna@mitre.org>",
     "Daniel Lee <daniellee@mitre.org>",
+    "Dylan Mahalingam <kmahalingam@mitre.org>",
+    "Dylan Mendelowitz <dmendelowitz@mitre.org>",
     "Dylan Phelan <dphelan@mitre.org>"
   ],
   "license": "ISC",
